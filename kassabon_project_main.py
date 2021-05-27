@@ -14,7 +14,7 @@ text = tess.image_to_string(img)
 cat_labels = []
 
 #list of all possible supermarkets for this project
-supermarkets =['BILA','SPAR','EUROSPAR','INTERSPAR','HOFER','PENNI','LIDL','MERKUR']
+supermarkets =['BILLA','SPAR','EUROSPAR','INTERSPAR','HOFER','PENNI','LIDL','MERKUR']
 #list of words that can be discarded right away
 out = ['Rabatt','EUR','SUMME','MAESTRO','WIEN','TELEFON', 'KARTE']
 
@@ -72,6 +72,24 @@ def assign_cat_to_item(text_receipt):
             else: #otherwise append the word to the dictionary
                 dict1[x].append(w)
 
+def confirm_prices(item,text_):
+    pattern = item + '.*[^n]'
+    price_pattern = '\d+[\.\,]\d\d'
+    line = re.findall(pattern, text_)
+    p = re.findall(price_pattern,line[0])
+    if len(p) >0:
+        try:
+            digi_list = p[0].split('.')
+            price = int(digi_list[0]) + (int(digi_list[1])/100)
+            return price
+        except ValueError:
+            digi_list = p[0].split(',')
+            price = int(digi_list[0])+(int(digi_list[1])/100)
+            return price
+    else:
+        price = input (f'no price found for {item} please enter price manually dd.dd')
+        return price
+
 def count_items_per_cat(dict_):
     cat_count = []
     for list in dict_.values():
@@ -85,8 +103,13 @@ assign_cat_to_item(words)
 supermarket = extract_supermarket(words)
 date = extract_date(text)
 
+#for k,v in dict1.items():
+#    for val in v:
+#        print(val)
+#        print(confirm_prices(val,text))
+
 #populate database
-enter_data(dict1,date,supermarket)
+#enter_data(dict1,date,supermarket)
 #create pie plot
-create_plot(count_items_per_cat(dict1),cat_labels)
+#create_plot(count_items_per_cat(dict1),cat_labels)
 

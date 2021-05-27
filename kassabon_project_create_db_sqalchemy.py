@@ -30,22 +30,3 @@ def enter_data(dicti,date,supermarket):
             print(insert_1)
             connection.execute(insert_1)
     connection.close()
-
-
-#my_groceries = {'sweets': ['duplo','milka'],
-#                'fruit': ['apple','banana'],
-#                'bread': ['semmel'],
-#                'dairy': ['schlagobers'],
-#                'veggy': ['melanzani','zucchini']}
-
-#for key,values in my_groceries.items():
-#    print(key)
-#    for v in values:
-#        print(v)
-
-#enter_data(my_groceries,'12.04.2019','MERKUR')
-
-#test = '11.05.2021'
-#y = int(test[-4:])
-#m = int(test[3:5])
-#d = int(test[:2])
