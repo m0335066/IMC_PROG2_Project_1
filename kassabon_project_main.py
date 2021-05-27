@@ -52,26 +52,6 @@ def extract_supermarket(text_receipt):
             superm_input = input("unknown supermarket, please enter supermarket name is known")
             return superm_input
 
-def assign_cat_to_item(text_receipt):
-    #words getting assigned to the dict1 for each category
-    for w in text_receipt:
-        if len(w)>3 and w.isalpha() and w not in out and w.capitalize() not in supermarkets:
-            print(w)
-            print(dict1.keys())
-            while True:
-                x = input("Select category from keys: ")
-                if x in dict1.keys(): #if the category exists leave the while loop
-                    break
-                elif x == "": #if the enter is pressed break
-                    break
-                else:
-                    print("Wrong category given!") #if wrong category is put, ask for new input
-                    continue
-            if x == "":
-                pass #if enter was pressed keep iterating through the list of words
-            else: #otherwise append the word to the dictionary
-                dict1[x].append(w)
-
 def confirm_prices(item,text_):
     pattern = item + '.*[^n]'
     price_pattern = '\d+[\.\,]\d\d'
@@ -87,8 +67,37 @@ def confirm_prices(item,text_):
             price = int(digi_list[0])+(int(digi_list[1])/100)
             return price
     else:
-        price = input (f'no price found for {item} please enter price manually dd.dd')
-        return price
+        while True:
+            p = input(f'no price found for {item} please enter price manually dd.dd: ')
+            try:
+                p_split = p.split('.')
+                price = int(p_split[0]) + (int(p_split[1]) / 100)
+                return price
+            except ValueError:
+                continue
+            except IndexError:
+                continue
+
+def assign_cat_to_item(text_receipt):
+    # words getting assigned to the dict1 for each category
+    for w in text_receipt:
+        if len(w) > 3 and w.isalpha() and w not in out and w.capitalize() not in supermarkets:
+            print(w)
+            print(dict1.keys())
+            while True:
+                x = input("Select category from keys: ")
+                if x in dict1.keys():  # if the category exists leave the while loop
+                    break
+                elif x == "":  # if the enter is pressed break
+                    break
+                else:
+                    print("Wrong category given!")  # if wrong category is put, ask for new input
+                    continue
+            if x == "":
+                pass  # if enter was pressed keep iterating through the list of words
+            else:  # otherwise append the word to the dictionary
+                p = confirm_prices(w,text) #check the price and add to to the dictionary
+                dict1[x].append((w,p))
 
 def count_items_per_cat(dict_):
     cat_count = []
@@ -100,6 +109,7 @@ def count_items_per_cat(dict_):
 words = word_tokenize(text)
 dict1 = define_categories()
 assign_cat_to_item(words)
+#print(dict1)
 supermarket = extract_supermarket(words)
 date = extract_date(text)
 
@@ -109,7 +119,7 @@ date = extract_date(text)
 #        print(confirm_prices(val,text))
 
 #populate database
-#enter_data(dict1,date,supermarket)
+enter_data(dict1,date,supermarket)
 #create pie plot
 #create_plot(count_items_per_cat(dict1),cat_labels)
 
