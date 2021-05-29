@@ -80,5 +80,8 @@ def test_count_items_per_cat():
     #checks if categories are counted properly if one category is empty
     assert count_items_per_cat(dict3) == [0, 1]
 
+def test_price_per_categor():
+    dict1 = {'sweets': [('biskuits', 1), ('chocolate', 2), ('fizzers', 3)], 'other': [('toothpaste', 1.99)]}
+    assert len(price_per_category(dict1)) == 2
 
 
