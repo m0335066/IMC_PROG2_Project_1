@@ -8,7 +8,7 @@ import pytesseract as tess
 
 #extracts a string from a png file and saves it in variable text
 tess.pytesseract.tesseract_cmd=r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-img=Image.open('bon_2258.png')
+img=Image.open('bon_1005.png')
 text = tess.image_to_string(img)
 
 #list of all possible supermarkets for this project

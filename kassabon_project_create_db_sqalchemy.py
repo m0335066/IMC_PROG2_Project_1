@@ -3,14 +3,14 @@ from sqlalchemy import update, create_engine, Table, Column, Integer, String, Da
 import uuid
 from datetime import datetime
 #######################################################################DATABASE
-engine = create_engine ('sqlite:///example1.db', echo = True)
+engine = create_engine ('sqlite:///example3.db', echo = True)
 meta = MetaData()
 
 #creating the table
 master_table = Table(
     'Einkauf', meta,
     Column('id', String, primary_key = True),
-    Column('date', Date), #should be DATE instead
+    Column('date', Date),
     Column('supermarket', String),
     Column('item', String),
     Column('price', Float),
