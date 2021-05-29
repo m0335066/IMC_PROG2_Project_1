@@ -1,27 +1,48 @@
-from kassabon_project_create_db_sqalchemy import *
-from kassabon_project_create_plots import *
+#from kassabon_project_create_db_sqalchemy import *
+#from kassabon_project_create_plots import *
 from PIL import Image
 import re
 from nltk.tokenize import word_tokenize
 import pytesseract as tess
+import os
 
-#extracts a string from a png file and saves it in variable text
+# list of all possible supermarkets for this project
+supermarkets = ['BILLA', 'SPAR', 'EUROSPAR', 'INTERSPAR', 'HOFER', 'PENNI', 'LIDL', 'MERKUR']
+# list of words that can be discarded right away
+out = ['Rabatt', 'EUR', 'SUMME', 'MAESTRO', 'WIEN', 'TELEFON', 'KARTE', []]
+# words getting assigned to the dict1 for each category
+
+#starts the extraction machine
 tess.pytesseract.tesseract_cmd=r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-img=Image.open('bon_2258.png')
-text = tess.image_to_string(img)
 
-#create an empty list for categories
-cat_labels = []
+#checks if user input is available and returns the 4 digit code of the file
+def select_image():
+    while True:
+        png_code = input ('Please enter 4 digit code for the receipt: ')
+        if 'bon_'+png_code+'.png' in os.listdir():
+            return png_code
+        else:
+            print('sorry the code you have enter is incorrect, please try again')
+            continue
 
-#list of all possible supermarkets for this project
-supermarkets =['BILLA','SPAR','EUROSPAR','INTERSPAR','HOFER','PENNI','LIDL','MERKUR']
-#list of words that can be discarded right away
-out = ['Rabatt','EUR','SUMME','MAESTRO','WIEN','TELEFON', 'KARTE']
+#extracts the text from the previously selected png file
+def extract_text_from_image(png_code):
+    img=Image.open('bon_'+png_code+'.png')
+    #text = tess.image_to_string(img)
+    return tess.image_to_string(img)
+
+
+#text = extract_text_from_image(select_image())
+#extract words with nltk
+#words = word_tokenize(text)
 
 #user enters categories to popoulate a dictionary with categories as keys,
 #when user is done entering categories, press 'x' to see a selection of categories
 #and confirm with 'Y' or keep updating with 'N'
 def define_categories():
+    # create an empty list for categories
+    global cat_labels
+    cat_labels = []
     while True:
         cat = input('Please enter category name, \nEnter \'x\' when ready: ')
         if cat != 'x':
@@ -41,16 +62,21 @@ def define_categories():
 def extract_date(text_receipt):
     date_pattern='\d\d\.\d\d\.\d\d\d\d'
     date=re.findall(date_pattern,text_receipt)
-    return date[0]
+    try:
+        return date[0]
+    except IndexError:
+        print('sorry no date found \'01.01.2001\' will be entered')
+        return '01.01.2001'
 
 #identify the type of super market supermarket:
 def extract_supermarket(text_receipt):
     for i in text_receipt:
-        if i in supermarkets:
-            return i
+        if i not in supermarkets:
+            pass
         else:
-            superm_input = input("unknown supermarket, please enter supermarket name is known")
-            return superm_input
+            return i
+    print('sorry supermarket not found, \'unknown\' will be entered')
+    return 'unknown'
 
 def confirm_prices(item,text_):
     pattern = item + '.*[^n]'
@@ -78,15 +104,14 @@ def confirm_prices(item,text_):
             except IndexError:
                 continue
 
-def assign_cat_to_item(text_receipt):
-    # words getting assigned to the dict1 for each category
-    for w in text_receipt:
+def assign_cat_to_item(dict_,words,text):
+    for w in words:
         if len(w) > 3 and w.isalpha() and w not in out and w.capitalize() not in supermarkets:
             print(w)
-            print(dict1.keys())
+            print(dict_.keys())
             while True:
-                x = input("Select category from keys: ")
-                if x in dict1.keys():  # if the category exists leave the while loop
+                x = input(f"Select a category for {w} from: ")
+                if x in dict_.keys():  # if the category exists leave the while loop
                     break
                 elif x == "":  # if the enter is pressed break
                     break
@@ -97,7 +122,9 @@ def assign_cat_to_item(text_receipt):
                 pass  # if enter was pressed keep iterating through the list of words
             else:  # otherwise append the word to the dictionary
                 p = confirm_prices(w,text) #check the price and add to to the dictionary
-                dict1[x].append((w,p))
+                dict_[x].append((w,p))
+
+    return dict_
 
 def count_items_per_cat(dict_):
     cat_count = []
@@ -105,21 +132,25 @@ def count_items_per_cat(dict_):
         cat_count.append(len(list))
     return cat_count
 
-#extract words with nltk
-words = word_tokenize(text)
-dict1 = define_categories()
-assign_cat_to_item(words)
-#print(dict1)
-supermarket = extract_supermarket(words)
-date = extract_date(text)
+def price_per_category(dict_):
+    cat_sum=[]
+    for list in dict_.values():
+        for i in range (1,len(list)):
+            sum = list[i][1] + list[i-1][1]
+        cat_sum.append(sum)
+    return cat_sum
 
-#for k,v in dict1.items():
-#    for val in v:
-#        print(val)
-#        print(confirm_prices(val,text))
+
+#supermarket = extract_supermarket(words)
+#date = extract_date(text)
+#print(date, supermarket)
+#dict1 = define_categories()
+#assign_cat_to_item(dict1,words,text)
+#print(dict1)
+#print(price_per_category(dict1))
 
 #populate database
-enter_data(dict1,date,supermarket)
+#enter_data(dict1,date,supermarket)
 #create pie plot
-#create_plot(count_items_per_cat(dict1),cat_labels)
-
+#create_plot_item_pie(count_items_per_cat(dict1),cat_labels)
+#create_plot_price_pie(price_per_category(dict1),cat_labels)
