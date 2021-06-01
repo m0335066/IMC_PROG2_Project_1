@@ -81,7 +81,10 @@ def test_count_items_per_cat():
     assert count_items_per_cat(dict3) == [0, 1]
 
 def test_price_per_categor():
-    dict1 = {'sweets': [('biskuits', 1), ('chocolate', 2), ('fizzers', 3)], 'other': [('toothpaste', 1.99)]}
+    dict1 = {'sweets': [('biskuits', 1.00), ('chocolate', 2.00), ('fizzers', 3.00)], 'other': [('toothpaste', 1.99)]}
+    dict2 = {}
     assert len(price_per_category(dict1)) == 2
+    assert len(price_per_category(dict2)) == 0
+    assert price_per_category(dict1)[0]-6 <1
 
 

@@ -129,12 +129,14 @@ def assign_cat_to_item(dict_,words,text):
 
     return dict_
 
+#counts how many items are stored in a category from the dictionary
 def count_items_per_cat(dict_):
     cat_count = []
-    for listi in dict_.values():
+    for listi in dict_.values(): #counts len of the list of tuples to confirm the amount of items
         cat_count.append(len(listi))
     return cat_count
 
+#calculates the sum for all prices in a category
 def price_per_category(dict_):
     cat_sum=[]
     for listi in dict_.values():
@@ -142,7 +144,7 @@ def price_per_category(dict_):
             sum_ = listi[i][1] + listi[i-1][1]
         try:
             cat_sum.append(sum_)
-        except UnboundLocalError: #excpet statement in case one of the catgeories is unused and sum_ is not insstanciated
+        except UnboundLocalError: #except statement in case one of the catgeories is unused and sum_ is not insstanciated
             cat_sum.append(0)
     return cat_sum
 
