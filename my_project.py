@@ -6,9 +6,10 @@ from kassabon_project_create_plots import *
 
 text = kassa.extract_text_from_image(kassa.select_image())
 words = word_tokenize(text)
-print(text)
+
+#print(text)
 #print(words)
-exit()
+#exit()
 
 #creates a dictionary with categories as keys and list of tuples as values, where each tuple has item and price
 dict1 = kassa.define_categories()
