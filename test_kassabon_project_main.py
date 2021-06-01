@@ -52,16 +52,20 @@ regionale Melanzani 8 1.59
 
 Bio Grahanwecker] 8 1.54
 2x 3,89'''
+    #checks if a price gets returned
     assert confirm_prices(item,text_) == 0.79
+    #checks if price is catched when having a comma
     assert confirm_prices(item,text2_) == 0.79
-    #assert confirm_prices(item,text3_) != 0.79
+    #checks when no price is available if manual input works
+    with mock.patch.object(builtins, 'input',lambda x: '01.01'):
+        assert confirm_prices(item,text3_) == 1.01
 
 def test_assign_cat_to_item():
     dict1 = {'sweets':[]}
     dict2 = {'sweets':[],'other':[]}
     words =['chocolate']
     text = 'Milka chocolate X 1.99\\n'
-    #checks if the items gets assigned in a dictionary
+    #checks if the item gets assigned in a dictionary
     with mock.patch.object(builtins, 'input', lambda x: 'sweets'):
         assert assign_cat_to_item(dict1,words,text) == {'sweets':[('chocolate',1.99)]}
 
